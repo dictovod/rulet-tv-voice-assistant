@@ -1,0 +1,5 @@
+server/.env
+server/.venv/
+**/__pycache__/
+*.py[cod]
+server/reply.wav

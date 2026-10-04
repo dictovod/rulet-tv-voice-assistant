@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>Rulet.tv Voice Assistant</title>
+  <style>
+    body { width: 320px; margin: 0; padding: 14px; font: 13px/1.4 system-ui, sans-serif; color: #1f2328; }
+    h1 { font-size: 15px; margin: 0 0 10px; }
+    label { display: block; margin: 8px 0 3px; color: #57606a; }
+    select, input[type=text] { width: 100%; box-sizing: border-box; padding: 5px; }
+    .row { display: flex; align-items: center; gap: 6px; margin: 8px 0; }
+    #status { margin-top: 12px; padding: 8px; border-radius: 6px; background: #f3f4f6; }
+    #log { margin-top: 8px; max-height: 140px; overflow: auto; font-size: 12px; }
+    #log div { margin: 3px 0; }
+    .u { color: #0a58ca; } .a { color: #1a7f37; }
+    small { color: #6e7781; }
+  </style>
+</head>
+<body>
+  <h1>Rulet.tv Voice Assistant</h1>
+  <div class="row"><input type="checkbox" id="enabled"><label for="enabled" style="margin:0;color:inherit">Автоответчик включён</label></div>
+  <label for="mode">Режим</label>
+  <select id="mode">
+    <option value="auto">Отвечать голосом</option>
+    <option value="listen">Только слушать (без ответа)</option>
+  </select>
+  <label for="serverUrl">Адрес сервера</label>
+  <input type="text" id="serverUrl">
+  <div class="row"><input type="checkbox" id="monitor"><label for="monitor" style="margin:0;color:inherit">Проигрывать ответ через динамики ПК</label></div>
+  <div id="status">Статус: <b id="state">—</b><div id="error" style="color:#cf222e"></div></div>
+  <div id="log"></div>
+  <small>После включения обновите вкладку rulet.tv и кликните по ней один раз.</small>
+  <script src="shared.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+# Настройки локального сервера автоответчика.
+# Конструкции ${VAR} подставляются из переменных окружения / файла .env.
+
+server:
+  host: "127.0.0.1"          # слушаем только localhost
+  port: 8765
+  auth_token: ""             # если задан — добавьте ?token=... к адресу сервера в popup расширения
+  allowed_extension_ids: []  # можно ограничить ID вашего расширения (chrome://extensions)
+  allow_any_origin: false    # true — разрешить клиентов без Origin (например, test_client.py без --origin)
+  log_level: "info"
+
+yandex:
+  api_key: "${YC_API_KEY}"
+  folder_id: "${YC_FOLDER_ID}"
+  disable_data_logging: true # просим Яндекс не логировать запросы (заголовок x-data-logging-enabled)
+
+stt:                         # SpeechKit STT, REST API v1 (короткие реплики до 30 с)
+  lang: "ru-RU"
+  topic: "general"
+  timeout_s: 15
+
+llm:                         # YandexGPT
+  model: "yandexgpt-lite/latest"   # lite — быстрее; для качества: "yandexgpt/latest"
+  temperature: 0.3
+  max_tokens: 150
+  timeout_s: 20
+
+tts:                         # SpeechKit TTS, REST API v3
+  voice: "alena"             # голоса «alice» в SpeechKit нет, см. README
+  role: "neutral"            # амплуа (зависит от голоса); пусто — не передавать
+  speed: 1.0
+  sample_rate: 48000         # LPCM, должен совпадать с частотой AudioContext расширения
+  timeout_s: 20
+
+vad:                         # детектор речи собеседника
+  frame_ms: 30
+  start_ms: 120              # сколько речи подряд считать началом реплики
+  silence_ms: 800            # пауза, после которой реплика считается законченной
+  preroll_ms: 300            # захватывать звук до начала реплики
+  min_utterance_ms: 300      # короче — отбрасываем как шум
+  max_utterance_s: 20
+  energy_threshold: 0.01     # абсолютный порог RMS (0..1)
+  noise_ratio: 3.0           # во сколько раз громче фонового шума
+
+dialog:
+  default_mode: "auto"       # "auto" — отвечать, "listen" — только слушать
+  system_prompt_file: "system_prompt.txt"
+  speak_greeting: true
+  greeting: "Здравствуйте! Я автоматический голосовой помощник. Чем могу помочь?"
+  fallback_phrase: "Извините, я не расслышал. Повторите, пожалуйста."
+  max_history_turns: 10
+  max_reply_chars: 400
+  barge_in: true             # прерывать бота, если собеседник заговорил
