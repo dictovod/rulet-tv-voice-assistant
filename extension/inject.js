@@ -272,13 +272,18 @@
   function collectRemote(pc) {
     if (!cfg.enabled) return;
     for (const r of pc.getReceivers()) {
-      if (r.track && r.track.kind === 'audio' && r.track.readyState === 'live') onRemoteTrack(r.track);
+      if (!r.track || r.track.readyState !== 'live') continue;
+      if (r.track.kind === 'audio') onRemoteTrack(r.track);
+      if (r.track.kind === 'video') onRemoteVideoTrack(r.track);
     }
   }
 
   function register(pc) {
     pcs.add(pc);
-    pc.addEventListener('track', (e) => { if (e.track.kind === 'audio') onRemoteTrack(e.track); });
+    pc.addEventListener('track', (e) => {
+      if (e.track.kind === 'audio') onRemoteTrack(e.track);
+      if (e.track.kind === 'video') onRemoteVideoTrack(e.track);
+    });
     const onChange = () => { syncSenders(pc); collectRemote(pc); };
     for (const ev of ['negotiationneeded', 'signalingstatechange', 'connectionstatechange', 'iceconnectionstatechange']) {
       pc.addEventListener(ev, onChange);
@@ -316,12 +321,49 @@
   let sessionActive = false;
   let idleSince = 0;
   let watchdog = null;
+  let sessionStartTimer = null;
+  let videoReadyAt = 0;
+  const observedVideoTracks = new WeakSet();
 
   function hasLiveRemote() {
     for (const pc of pcs) {
       if (pc.getReceivers().some((r) => r.track && r.track.kind === 'audio' && r.track.readyState === 'live')) return true;
     }
     return false;
+  }
+
+  function hasLiveRemoteVideo() {
+    for (const pc of pcs) {
+      if (pc.getReceivers().some((r) => r.track && r.track.kind === 'video' && r.track.readyState === 'live' && !r.track.muted)) return true;
+    }
+    return false;
+  }
+
+  function requestSessionStart() {
+    if (!cfg.enabled || sessionActive) return;
+    if (!hasLiveRemoteVideo()) {
+      videoReadyAt = 0;
+      clearTimeout(sessionStartTimer);
+      sessionStartTimer = null;
+      return;
+    }
+    if (!videoReadyAt) videoReadyAt = Date.now();
+    if (sessionStartTimer) return;
+    sessionStartTimer = setTimeout(() => {
+      sessionStartTimer = null;
+      if (cfg.enabled && hasLiveRemoteVideo() && hasLiveRemote()) startSession();
+      else if (!hasLiveRemoteVideo()) videoReadyAt = 0;
+    }, Math.max(0, 2000 - (Date.now() - videoReadyAt)));
+  }
+
+  function onRemoteVideoTrack(track) {
+    if (observedVideoTracks.has(track)) return;
+    observedVideoTracks.add(track);
+    const onVideoStateChange = () => requestSessionStart();
+    track.addEventListener('unmute', onVideoStateChange);
+    track.addEventListener('mute', onVideoStateChange);
+    track.addEventListener('ended', onVideoStateChange);
+    requestSessionStart();
   }
 
   function startSession() {
@@ -335,6 +377,9 @@
   }
 
   function endSession(reason) {
+    videoReadyAt = 0;
+    clearTimeout(sessionStartTimer);
+    sessionStartTimer = null;
     if (!sessionActive) return;
     sessionActive = false;
     engine.capturing = false;
@@ -358,7 +403,7 @@
   function onRemoteTrack(track) {
     if (!cfg.enabled) return;
     engine.attachRemote(track);
-    startSession();
+    requestSessionStart();
   }
 
   function applyConfig(next) {
@@ -368,7 +413,12 @@
       engine.ensure();
       pcs.forEach(collectRemote);      // звонок мог начаться до включения
     }
-    if (!cfg.enabled && prev.enabled) endSession('выключено пользователем');
+    if (!cfg.enabled && prev.enabled) {
+      clearTimeout(sessionStartTimer);
+      sessionStartTimer = null;
+      videoReadyAt = 0;
+      endSession('выключено пользователем');
+    }
     if (cfg.enabled !== prev.enabled || cfg.mode !== prev.mode) syncAll();
   }
 
