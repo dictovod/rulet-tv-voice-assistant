@@ -18,6 +18,8 @@ Rulet.tv WebRTC ← исходящий PCM ← расширение ←───
 
 ## Настройка Yandex Cloud
 
+Подробные шаги создания сервисного аккаунта и API-ключа: [HTML-инструкция](./yandex-cloud-keys-for-rulet-tv.html).
+
 В выбранном каталоге создайте сервисный аккаунт и назначьте ему роли:
 
 - `ai.languageModels.user`

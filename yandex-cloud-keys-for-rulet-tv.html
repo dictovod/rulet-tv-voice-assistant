@@ -1,0 +1,471 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ключи Yandex Cloud для Rulet.tv</title>
+  <style>
+    :root{color-scheme:light;--ink:#172126;--muted:#5c6b70;--line:#dce5e4;--paper:#fff;--wash:#f3f7f6;--accent:#147a69;--accent-dark:#0b5549;--gold:#f1c75b}
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--wash);color:var(--ink);font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+    main{width:min(100% - 40px,880px);margin:0 auto;padding:42px 0 52px}
+    .hero{position:relative;overflow:hidden;border-radius:22px;background:#122a2b;color:#f6fbf9;padding:32px 34px 30px}
+    .hero:after{content:"";position:absolute;width:210px;height:210px;border:1px solid #ffffff20;border-radius:50%;right:-68px;top:-105px;box-shadow:0 0 0 24px #ffffff08,0 0 0 49px #ffffff05}
+    .eyebrow{color:#a4d8cb;text-transform:uppercase;letter-spacing:.12em;font-size:12px;font-weight:700}
+    h1{font-size:clamp(27px,5vw,40px);line-height:1.12;letter-spacing:-.04em;margin:12px 0 12px;max-width:640px}
+    .hero p{margin:0;color:#d1e1dc;max-width:670px}
+    .reminder{display:flex;gap:12px;align-items:flex-start;margin:18px 0 24px;padding:14px 16px;border:1px solid #b9d9cf;border-radius:13px;background:#e6f3ef;color:#23423b}
+    .reminder strong{color:var(--accent-dark)}
+    .dot{flex:none;width:9px;height:9px;margin-top:7px;border-radius:50%;background:var(--accent)}
+    .download{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:14px 0 22px;padding:17px 19px;background:#fff;border:1px solid var(--line);border-radius:14px}
+    .download p{margin:3px 0 0;font-size:14px}
+    .button{display:inline-flex;justify-content:center;align-items:center;flex:none;border:0;border-radius:10px;padding:11px 15px;background:var(--accent);color:#fff;text-decoration:none;font-weight:700}
+    .button:hover{background:var(--accent-dark)}
+    .button.secondary{background:#e4f1ed;color:var(--accent-dark)}
+    .command{display:block;margin:9px 0;padding:12px 14px;border-radius:10px;background:#172a2c;color:#ecf5f2;overflow-wrap:anywhere;white-space:pre-wrap}
+    .command code{background:transparent;color:inherit;padding:0}
+    details{margin-top:14px;border-top:1px solid var(--line);padding-top:13px}
+    summary{cursor:pointer;color:var(--accent-dark);font-weight:650}
+    .source-code{max-height:480px;overflow:auto;margin:10px 0 0;padding:14px;border-radius:10px;background:#172a2c;color:#ecf5f2;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre}
+    .steps{display:grid;gap:14px;min-width:0}
+    article{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:17px;padding:21px 23px}
+    .step-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;min-width:0}
+    .step-head h2{min-width:0;overflow-wrap:anywhere}
+    .num{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:10px;background:#dff0eb;color:var(--accent-dark);font-weight:750}
+    h2{font-size:19px;letter-spacing:-.02em;margin:0}
+    p{margin:8px 0;color:var(--muted)}
+    ol,ul{margin:8px 0 0;padding-left:21px;color:var(--muted)}
+    li{padding-left:3px;margin:6px 0}
+    code{font: .91em ui-monospace,SFMono-Regular,Consolas,monospace;color:#173c37;background:#edf4f2;padding:2px 5px;border-radius:5px;overflow-wrap:anywhere}
+    .roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+    .role{min-width:0;overflow-wrap:anywhere;border:1px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--muted);font-size:14px}
+    .role code{display:block;overflow-wrap:anywhere;word-break:break-word;margin-bottom:3px;background:transparent;padding:0;color:var(--ink);font-weight:650}
+    .env{margin:12px 0 0;padding:15px 17px;background:#172a2c;color:#ecf5f2;border-radius:11px;overflow:auto;font:14px/1.8 ui-monospace,SFMono-Regular,Consolas,monospace}
+    .env code{background:transparent;color:inherit;padding:0}
+    .note{font-size:14px;padding:12px 14px;border-left:3px solid var(--gold);background:#fff9e8;border-radius:0 9px 9px 0;color:#675622;margin-top:13px}
+    a{color:var(--accent-dark);text-underline-offset:3px}
+    .sources{display:flex;flex-wrap:wrap;gap:8px 18px;margin:22px 2px 0;font-size:13px}
+    .sources a{color:var(--muted)}
+    footer{margin-top:20px;color:#79868a;font-size:12px}
+    @media(max-width:580px){main{width:min(100% - 24px,880px);padding:16px 0 30px}.hero{padding:25px 21px 23px;border-radius:17px}.hero:after{right:-145px;top:-120px}.reminder{margin:14px 0 17px;padding:12px}.download{align-items:stretch;flex-direction:column;padding:15px}.steps{gap:10px}article{padding:17px 16px;border-radius:14px}.roles{grid-template-columns:1fr}.sources{display:grid;gap:9px}.env{font-size:12px;padding:13px}.button{width:100%}}
+  </style>
+</head>
+<body>
+  <main>
+    <header class="hero">
+      <div class="eyebrow">Rulet.tv · сервер</div>
+      <h1>Подготовьте доступ Yandex Cloud</h1>
+      <p>Нужны сервисный аккаунт с ролями и API-ключ с узкими областями доступа. Затем оба значения добавляются в файл сервера <code>.env</code>.</p>
+    </header>
+
+    <section class="download" aria-label="Архив проекта">
+      <div><strong>Сначала скачайте архив</strong><p>Внутри находятся расширение для Rulet.tv и Python-сервер.</p></div>
+      <a class="button" href="https://cloud.mail.ru/public/EDqE/f9g2K9mfP" target="_blank" rel="noopener">Скачать архив ZIP</a>
+    </section>
+
+    <div class="reminder"><span class="dot"></span><div><strong>Важно: это два разных уровня доступа.</strong><br>Роли назначаются сервисному аккаунту на каталог, а области действия выбираются отдельно при создании API-ключа.</div></div>
+
+    <section class="steps">
+      <article>
+        <div class="step-head"><span class="num">1</span><h2>Создайте сервисный аккаунт</h2></div>
+        <ol>
+          <li>Откройте <a href="https://console.yandex.cloud/">консоль Yandex Cloud</a> и выберите каталог, в котором будет работать сервер.</li>
+          <li>Откройте <strong>Identity and Access Management → Сервисные аккаунты → Создать сервисный аккаунт</strong>. Укажите имя, например <code>rulet-tv-voice-assistant</code>; описание можно заполнить по желанию.</li>
+          <li>В форме создания найдите блок <strong>Роли в каталоге</strong>, нажмите <strong>Добавить роль</strong> и добавьте все роли из списка ниже. Так они назначатся аккаунту в выбранном каталоге.</li>
+        </ol>
+        <div class="roles">
+          <div class="role"><code>ai.languageModels.user</code>Использование языковой модели</div>
+          <div class="role"><code>ai.speechkit-stt.user</code>Распознавание речи</div>
+          <div class="role"><code>ai.speechkit-tts.user</code>Синтез речи</div>
+          <div class="role"><code>resource-manager.viewer</code>Только чтение сведений о каталоге; входит в проверенный рабочий набор</div>
+        </div>
+        <p>После добавления ролей нажмите <strong>Создать</strong>. Если аккаунт уже создан, назначьте ему эти роли в правах доступа выбранного каталога. Роли <code>editor</code> и <code>admin</code> не нужны.</p>
+      </article>
+
+      <article>
+        <div class="step-head"><span class="num">2</span><h2>Создайте API-ключ с нужными областями</h2></div>
+        <ol>
+          <li>Откройте созданный сервисный аккаунт. Вверху выберите <strong>Создать новый ключ → Создать API-ключ</strong>. Не выбирайте статический ключ доступа или авторизованный ключ — нужен именно API-ключ.</li>
+          <li>Описание ключа необязательно. Поле <strong>Область действия</strong> обязательно: в длинном списке выберите ровно эти три пункта:</li>
+        </ol>
+        <ul>
+          <li><code>yc.ai.foundationModels.execute</code> — ответы YandexGPT.</li>
+          <li><code>yc.ai.speechkitStt.execute</code> — распознавание речи.</li>
+          <li><code>yc.ai.speechkitTts.execute</code> — озвучивание ответа.</li>
+        </ul>
+        <p>Проверяйте полные названия: не выбирайте похожую область <code>yc.ai.languageModels.execute</code>. Если список закрылся после выбора пункта, откройте его снова и добавьте следующий. Перед созданием проверьте, что выбраны все три области выше.</p>
+        <div class="note"><strong>Срок действия указывать не обязательно.</strong> Оставьте поле даты пустым, если ключ не должен автоматически истечь. Если зададите дату, после неё ключ перестанет работать. Нажмите <strong>Создать</strong> и сразу скопируйте секретный API-ключ: позднее его значение нельзя будет посмотреть. Не отправляйте ключ в чат.</div>
+      </article>
+
+      <article>
+        <div class="step-head"><span class="num">3</span><h2>Заполните два поля сервера</h2></div>
+        <p>Скопируйте ID того же каталога. В консоли он показан под названием каталога; в адресе страницы это часть после <code>/folders/</code>.</p>
+        <p>В распакованном проекте откройте <code>server</code> и создайте или заполните рядом с <code>.env.example</code> файл <code>.env</code>. Например: <code>C:\Users\user\Downloads\rulet-tv-voice-assistant\server\.env</code>.</p>
+        <pre class="env"><code>YC_API_KEY=вставьте_секретный_API-ключ
+YC_FOLDER_ID=вставьте_ID_каталога</code></pre>
+        <div class="note">Если файла <code>.env</code> ещё нет, скопируйте <code>.env.example</code> рядом и заполните его. Не публикуйте и не отправляйте заполненный файл.</div>
+      </article>
+
+      <article>
+        <div class="step-head"><span class="num">4</span><h2>Запустите проверку загрузки и настройки</h2></div>
+        <p>Распакуйте ZIP. Нажмите кнопку, чтобы скачать проверяющий скрипт, и положите файл рядом с архивом или с распакованной папкой проекта.</p>
+        <p><a class="button secondary" id="download-checker" href="#">Скачать Python-скрипт проверки</a></p>
+        <p>Проверяющий скрипт также приложен в репозитории рядом с этой HTML-инструкцией.</p>
+        <p>Откройте PowerShell в этой папке и выполните:</p>
+        <pre class="command"><code>py -3.11 .\check_rulet_tv_setup.py</code></pre>
+        <p>Если ZIP переименован или лежит в другом месте, укажите путь к нему:</p>
+        <pre class="command"><code>py -3.11 .\check_rulet_tv_setup.py "C:\путь\к\архиву.zip"</code></pre>
+        <p>Скрипт проверит целостность и состав ZIP, наличие файлов плагина и сервера, значения <code>YC_API_KEY</code> и <code>YC_FOLDER_ID</code> без их показа, Python 3.11+, зависимости и ответ локального сервера. Если что-то пропущено, он напишет что именно сделать.</p>
+        <div class="note">Проверка работает только с файлами на этом компьютере и адресом localhost. Она не отправляет секреты в интернет и не может сама подтвердить права/баланс Yandex Cloud или факт установки расширения в браузер. Эти пункты сверяйте по инструкции выше.</div>
+        <details><summary>Показать код проверяющего скрипта</summary><pre class="source-code" id="checker-display"></pre></details>
+      </article>
+    </section>
+
+    <nav class="sources" aria-label="Официальные инструкции">
+      <a href="https://yandex.cloud/ru/docs/iam/operations/sa/create">Создание сервисного аккаунта</a>
+      <a href="https://yandex.cloud/ru/docs/iam/operations/sa/assign-role-for-sa">Назначение ролей</a>
+      <a href="https://yandex.cloud/ru/docs/iam/operations/authentication/manage-api-keys#create-api-key">Создание API-ключа</a>
+      <a href="https://yandex.cloud/ru/docs/iam/concepts/authorization/api-key">Области действия ключа</a>
+      <a href="https://yandex.cloud/ru/docs/resource-manager/operations/folder/get-id">Как найти ID каталога</a>
+    </nav>
+    <footer>Названия переменных взяты из конфигурации сервера. Для вызовов платных сервисов Yandex Cloud должен быть активен платёжный аккаунт.</footer>
+  </main>
+  <script type="text/plain" id="checker-source">
+#!/usr/bin/env python3
+"""Read-only local checks for the Rulet.tv Voice Assistant package."""
+
+import argparse
+import json
+import platform
+import subprocess
+import sys
+import urllib.error
+import urllib.request
+import zipfile
+from pathlib import Path
+
+
+APP_NAME = "rulet-tv-voice-assistant"
+ARCHIVE_URL = "https://cloud.mail.ru/public/EDqE/f9g2K9mfP"
+PROJECT_FILES = (
+    "README.md",
+    "extension/background.js",
+    "extension/bridge.js",
+    "extension/icons/icon16.png",
+    "extension/icons/icon48.png",
+    "extension/icons/icon128.png",
+    "extension/inject.js",
+    "extension/logger.js",
+    "extension/manifest.json",
+    "extension/popup.html",
+    "extension/popup.js",
+    "extension/shared.js",
+    "server/.env.example",
+    "server/config.py",
+    "server/config.yaml",
+    "server/main.py",
+    "server/requirements.txt",
+    "server/session.py",
+    "server/system_prompt.txt",
+    "server/test_client.py",
+    "server/vad.py",
+    "server/yandex_gpt.py",
+    "server/yandex_stt.py",
+    "server/yandex_tts.py",
+)
+ZIP_FILES = PROJECT_FILES
+MODULES = {
+    "fastapi": "fastapi",
+    "uvicorn": "uvicorn",
+    "websockets": "websockets",
+    "httpx": "httpx",
+    "pydantic": "pydantic",
+    "PyYAML": "yaml",
+    "python-dotenv": "dotenv",
+    "numpy": "numpy",
+}
+COUNTS = {"ok": 0, "attention": 0, "info": 0}
+
+
+def say(kind, text):
+    tags = {"ok": "ГОТОВО", "attention": "НУЖНО СДЕЛАТЬ", "info": "СПРАВКА"}
+    COUNTS[kind] += 1
+    print("[{}] {}".format(tags[kind], text))
+
+
+def is_project(path):
+    return (path / "server" / "requirements.txt").is_file() and (
+        path / "extension" / "manifest.json"
+    ).is_file()
+
+
+def child_directories(path):
+    try:
+        return [p for p in path.iterdir() if p.is_dir() and not p.is_symlink()]
+    except OSError:
+        return []
+
+
+def search_directories(path):
+    paths = [path]
+    paths.extend(child_directories(path))
+    for child in list(paths[1:]):
+        paths.extend(child_directories(child))
+    unique = []
+    seen = set()
+    for item in paths:
+        try:
+            key = str(item.resolve()).casefold()
+        except OSError:
+            key = str(item).casefold()
+        if key not in seen:
+            seen.add(key)
+            unique.append(item)
+    return unique
+
+
+def scan_locations(argument):
+    if argument:
+        given = Path(argument).expanduser()
+        if not given.exists():
+            return [], [], given
+        if given.is_file():
+            if given.suffix.lower() == ".zip":
+                return [], [given], None
+            return [], [], given
+        locations = search_directories(given)
+    else:
+        roots = [Path.cwd(), Path(__file__).resolve().parent]
+        locations = []
+        for root in roots:
+            locations.extend(search_directories(root))
+
+    projects = []
+    seen_projects = set()
+    for folder in locations:
+        if not is_project(folder):
+            continue
+        key = str(folder.resolve()).casefold()
+        if key not in seen_projects:
+            seen_projects.add(key)
+            projects.append(folder)
+    archives = []
+    for folder in locations:
+        try:
+            archives.extend(
+                p for p in folder.iterdir()
+                if p.is_file()
+                and p.suffix.lower() == ".zip"
+                and (APP_NAME in p.name.casefold() or "f9g2k9mfp" in p.name.casefold())
+            )
+        except OSError:
+            continue
+    unique_archives = []
+    seen = set()
+    for archive in archives:
+        key = str(archive.resolve()).casefold()
+        if key not in seen:
+            seen.add(key)
+            unique_archives.append(archive)
+    return projects, unique_archives, None
+
+
+def inspect_archive(path):
+    try:
+        with zipfile.ZipFile(path) as archive:
+            names = {name.replace("\\", "/").lstrip("./") for name in archive.namelist()}
+            prefix = APP_NAME + "/"
+            missing = [
+                needed
+                for needed in ZIP_FILES
+                if prefix + needed not in names
+            ]
+            damaged = archive.testzip()
+        return missing, damaged, None
+    except (OSError, zipfile.BadZipFile, RuntimeError) as error:
+        return list(ZIP_FILES), None, str(error)
+
+
+def parse_env(path):
+    values = {}
+    try:
+        lines = path.read_text(encoding="utf-8-sig").splitlines()
+    except (OSError, UnicodeError):
+        return values
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("export "):
+            line = line[7:].strip()
+        key, separator, value = line.partition("=")
+        if separator:
+            values[key.strip()] = value.strip().strip("\"'").strip()
+    return values
+
+
+def is_filled(value):
+    text = (value or "").strip().lower()
+    placeholders = {
+        "",
+        "...",
+        "вставьте_секретный_api-ключ",
+        "вставьте_id_каталога",
+        "your_api_key",
+        "your_folder_id",
+        "ваш_ключ",
+        "ваш_id_каталога",
+    }
+    return text not in placeholders and not (text.startswith("<") and text.endswith(">"))
+
+
+def check_project(root):
+    print("\nПапка проекта: {}".format(root))
+    missing = [relative for relative in PROJECT_FILES if not (root / relative).is_file()]
+    if missing:
+        say("attention", "В распакованном проекте не найдены файлы: {}".format(", ".join(missing)))
+    else:
+        say("ok", "Файлы расширения и сервера на месте.")
+
+    manifest_path = root / "extension" / "manifest.json"
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        matches = [match for item in manifest.get("content_scripts", []) for match in item.get("matches", [])]
+        if any("rulet.tv" in match for match in matches):
+            say("ok", "В манифесте расширения указан сайт rulet.tv.")
+        else:
+            say("attention", "Проверьте манифест расширения: в нём не найден сайт rulet.tv.")
+    except (OSError, ValueError, AttributeError):
+        say("attention", "Не удалось прочитать extension/manifest.json.")
+
+    env_path = root / "server" / ".env"
+    template = root / "server" / ".env.example"
+    if not env_path.is_file():
+        if template.is_file():
+            say("attention", "Нет server/.env. Скопируйте .env.example в .env и заполните YC_API_KEY и YC_FOLDER_ID по инструкции.")
+        else:
+            say("attention", "Нет server/.env и шаблона .env.example.")
+    else:
+        values = parse_env(env_path)
+        for name in ("YC_API_KEY", "YC_FOLDER_ID"):
+            if is_filled(values.get(name, "")):
+                say("ok", "{} заполнен (само значение скрыто).".format(name))
+            else:
+                say("attention", "{} пуст или содержит пример: заполните его в server/.env.".format(name))
+        say("info", "Проверена только заполненность .env. Подлинность ключа и права в облаке без API-запроса проверить нельзя.")
+
+    server = root / "server"
+    venv_python = server / ".venv" / ("Scripts/python.exe" if platform.system() == "Windows" else "bin/python")
+    if not venv_python.is_file():
+        say("attention", "Не найдена виртуальная среда server/.venv. Создайте её и установите зависимости по инструкции README.")
+    else:
+        code = (
+            "import importlib.util,json,sys;"
+            "mods=" + repr(list(MODULES.values())) + ";"
+            "print(json.dumps({'version':list(sys.version_info[:3]),"
+            "'missing':[m for m in mods if importlib.util.find_spec(m) is None]}))"
+        )
+        try:
+            result = subprocess.run(
+                [str(venv_python), "-c", code], capture_output=True, text=True, timeout=20
+            )
+            details = json.loads(result.stdout) if result.returncode == 0 else {}
+            version = tuple(details.get("version", [0, 0, 0]))
+            if version >= (3, 11):
+                say("ok", "Виртуальная среда использует Python {}.{}.{} (нужен 3.11+).".format(*version))
+            else:
+                say("attention", "В server/.venv нужен Python 3.11 или новее.")
+            missing_modules = details.get("missing", [])
+            if missing_modules:
+                packages = [name for name, module in MODULES.items() if module in missing_modules]
+                say("attention", "В .venv не хватает пакетов: {}. Установите их командой из инструкции.".format(", ".join(packages)))
+            else:
+                say("ok", "Все Python-пакеты сервера установлены в server/.venv.")
+        except (OSError, subprocess.TimeoutExpired, ValueError, TypeError):
+            say("attention", "Не удалось проверить Python и пакеты внутри server/.venv.")
+
+
+def check_local_server():
+    try:
+        with urllib.request.urlopen("http://127.0.0.1:8765/health", timeout=2) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+            if response.status == 200 and payload.get("status") == "ok":
+                say("ok", "Локальный сервер отвечает на http://127.0.0.1:8765/health.")
+                return
+            say("attention", "Локальный сервер ответил, но проверка /health не прошла.")
+    except (OSError, urllib.error.URLError, ValueError, TimeoutError):
+        say("info", "Сервер сейчас не запущен или не отвечает. Запустите его из папки server командой python main.py.")
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Проверяет ZIP и локальную настройку Rulet.tv Voice Assistant; ничего не устанавливает и не отправляет."
+    )
+    parser.add_argument("path", nargs="?", help="путь к ZIP-архиву или распакованной папке проекта")
+    args = parser.parse_args()
+
+    print("ПРОВЕРКА Rulet.tv Voice Assistant")
+    print("Скрипт только читает файлы и проверяет localhost; секреты не печатает и в интернет не отправляет.\n")
+    if sys.version_info < (3, 11):
+        say("attention", "Скрипт запущен Python {}.{}; для сервера установите Python 3.11 или новее.".format(*sys.version_info[:2]))
+
+    projects, archives, invalid_argument = scan_locations(args.path)
+    if invalid_argument is not None:
+        say("attention", "Указанный путь не найден или не является ZIP-архивом/папкой: {}".format(invalid_argument))
+
+    valid_archives = []
+    for archive in archives:
+        missing, damaged, error = inspect_archive(archive)
+        if error:
+            if APP_NAME in archive.name.casefold():
+                say("attention", "Не удалось открыть архив {}: {}".format(archive.name, error))
+            continue
+        if missing:
+            if APP_NAME in archive.name.casefold():
+                say("attention", "В архиве {} не хватает файлов проекта: {}".format(archive.name, ", ".join(missing)))
+            continue
+        valid_archives.append(archive)
+        if damaged:
+            say("attention", "ZIP повреждён внутри файла: {}".format(archive.name))
+        else:
+            say("ok", "ZIP найден и читается; в нём есть файлы плагина и сервера: {}".format(archive.name))
+
+    if not valid_archives and not projects:
+        if archives:
+            say("attention", "Среди найденных ZIP не распознан полный архив проекта. Укажите нужный ZIP или скачайте его: {}".format(ARCHIVE_URL))
+        else:
+            say("attention", "Не найден ZIP с проектом или распакованная папка. Скачайте архив: {}".format(ARCHIVE_URL))
+
+    if projects:
+        root = next((p for p in projects if p.name.casefold() == APP_NAME), projects[0])
+        check_project(root)
+        if len(projects) > 1:
+            say("info", "Найдены и другие папки с похожим сервером; проверена папка нужного проекта: {}".format(root))
+    elif valid_archives:
+        say("attention", "Архив есть, но распакованная папка проекта не найдена. Распакуйте ZIP и запустите проверку ещё раз.")
+
+    check_local_server()
+    say("info", "Скрипт не может определить, установлено ли расширение в браузере, и не проверяет действительность API-ключа или роли в Yandex Cloud.")
+    print("\nИТОГ: готово — {}; требуется внимание — {}; справка — {}.".format(
+        COUNTS["ok"], COUNTS["attention"], COUNTS["info"]
+    ))
+    if COUNTS["attention"]:
+        print("Исправьте пункты «НУЖНО СДЕЛАТЬ» по инструкции выше и запустите проверку повторно.")
+        return 1
+    print("Локальные проверки пройдены. Осталось проверить вручную доступ к Яндекс Cloud и включение расширения в браузере.")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+  </script>
+  <script>
+    const checkerSource = document.getElementById("checker-source").textContent.trim();
+    document.getElementById("checker-display").textContent = checkerSource;
+    const checkerFile = new Blob([checkerSource], { type: "text/x-python;charset=utf-8" });
+    const checkerLink = document.getElementById("download-checker");
+    checkerLink.href = URL.createObjectURL(checkerFile);
+    checkerLink.download = "check_rulet_tv_setup.py";
+  </script>
+</body>
+</html>
