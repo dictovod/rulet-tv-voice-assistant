@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Проверка корня GitHub-репозитория</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff;--subtle:#fafafa;--muted:#f4f4f5;--line:#e4e4e7;--faint:#a1a1aa;--soft:#71717a;--text2:#52525b;--text:#18181b;--good:#15803d;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+main{max-width:1040px;margin:0 auto;padding:48px 24px 72px}
+h1{font-size:32px;line-height:1.2;letter-spacing:-.02em;margin:0 0 12px;font-weight:700}
+h2{font-size:18px;letter-spacing:-.01em;margin:34px 0 12px;font-weight:600}
+p{margin:0 0 12px;color:var(--text2)}
+a{color:var(--text);text-decoration:underline;text-decoration-color:var(--faint);text-underline-offset:2px}
+a:hover{text-decoration-color:var(--text)}
+.meta{font-size:13px;color:var(--soft);margin-bottom:24px}
+.lead{font-size:17px;color:var(--text);max-width:800px}
+.callout{border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--subtle);margin:20px 0}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:680px}
+th,td{padding:11px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:var(--subtle);font-weight:600;font-size:12px;color:var(--soft);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+.tag{display:inline-block;font-size:12px;font-weight:500;padding:1px 8px;border-radius:999px;background:var(--muted);color:var(--text2);white-space:nowrap}
+.tag.ok{background:#f0fdf4;color:var(--good)}
+.tag.check{background:#fffbeb;color:var(--warn)}
+ul{margin:0;padding-left:20px;color:var(--text2)}
+li{margin:6px 0}
+footer{margin-top:42px;font-size:12px;color:var(--faint)}
+@media(max-width:600px){main{padding:28px 16px 48px}h1{font-size:26px}.lead{font-size:16px}}
+</style>
+</head>
+<body><main>
+  <h1>Корневые файлы GitHub: что обновлять</h1>
+  <div class="meta">Проверено 7 октября 2026 · ветка <code>main</code> и опубликованные файлы репозитория</div>
+  <p class="lead">Обновлять нужно проверяющий скрипт и встроенную в HTML-инструкцию копию. README уже описывает 0.4.6, а правила в `.gitignore` подходят, но в Git уже отслеживается `server/.env`, поэтому одних правил игнорирования недостаточно для защиты будущих ключей.</p>
+
+  <div class="callout"><strong>Главный риск.</strong> Опубликованный `server/.env` сейчас содержит только заглушки, не настоящие ключи. Но Git продолжит отслеживать этот файл даже при наличии правила `server/.env` в `.gitignore`. Если заменить заглушки реальными значениями и закоммитить изменения, ключи могут попасть в репозиторий.</div>
+
+  <h2>Проверенные файлы</h2>
+  <div class="table-wrap"><table>
+    <thead><tr><th>Файл</th><th>Что найдено</th><th>Рекомендация</th><th>Статус</th></tr></thead>
+    <tbody>
+      <tr><td><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/README.md">README.md</a></td><td>Описывает боковую панель, актуальные проверки и сброс диалога при смене видеотрека. Соответствует 0.4.6.</td><td>Оставить как есть.</td><td><span class="tag ok">Актуален</span></td></tr>
+      <tr><td><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/.gitignore">.gitignore</a></td><td>Игнорирует `server/.env`, виртуальное окружение, кэш Python и WAV-ответы.</td><td>Правило верное, но уже отслеживаемый `.env` оно не перестанет отслеживать. Удалить `.env` из индекса Git; оставить `.env.example`.</td><td><span class="tag check">Нужен шаг по Git</span></td></tr>
+      <tr><td><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/check_rulet_tv_setup.py">check_rulet_tv_setup.py</a></td><td>Ищет удалённые `extension/popup.html` и `popup.js`, не проверяет нынешние `panel.html`, `options.*`, `origin.py` и lifecycle-тест. Ссылка на ZIP не имеет номера версии. Не распознаёт опубликованные заглушки `.env` как незаполненные.</td><td>Обновить список файлов, проверку версий/заглушек и источник архивной ссылки.</td><td><span class="tag check">Устарел</span></td></tr>
+      <tr><td><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/yandex-cloud-keys-for-rulet-tv.html">yandex-cloud-keys-for-rulet-tv.html</a></td><td>Инструкция по доступам полезна, но скачивает неверсированный архив с Mail.ru и содержит встроенную копию того же устаревшего проверяющего скрипта.</td><td>Сохранить инструкцию; обновить ссылку на архив и встроенный скрипт. Явно отделить публичный шаблон от локального файла с настоящими ключами.</td><td><span class="tag check">Нужна правка</span></td></tr>
+      <tr><td><a href="https://github.com/dictovod/rulet-tv-voice-assistant/tree/main/server">server/.env</a></td><td>Файл есть в GitHub; оба значения сейчас заглушки. Он добавлен в Git и публично доступен.</td><td>Безопаснее удалить его из индекса (`git rm --cached server/.env`), оставить в репозитории `.env.example`, а настоящий `.env` хранить только локально.</td><td><span class="tag check">Не хранить секреты</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Что подтверждено</h2>
+  <ul>
+    <li>На GitHub в `server/.env` найдены только значения-заглушки; действительных ключей в опубликованных значениях не обнаружено.</li>
+    <li>В `server/config.yaml` ссылки на `${YC_API_KEY}` и `${YC_FOLDER_ID}`, реальных учётных значений не найдено.</li>
+    <li>`server/system_prompt.txt` содержит личные сведения и уже опубликован. Это отдельный вопрос приватности, не проблема корневых файлов.</li>
+    <li>Страница Mail.ru показывает файл `rulet-tv-voice-assistant-fixed.zip`, но не показывает его версию. По открытому листингу нельзя подтвердить, что это сборка 0.4.6.</li>
+  </ul>
+
+  <h2>Итог</h2>
+  <p>README и `.gitignore` не требуют переписывания. Проверяющий скрипт и HTML-инструкцию стоит обновить вместе. Для безопасной работы с ключами нужно убрать уже отслеживаемый `.env` из Git и использовать локальный `.env`, создаваемый из `.env.example`.</p>
+
+  <h2>Источники</h2>
+  <ul>
+    <li><a href="https://github.com/dictovod/rulet-tv-voice-assistant/tree/main">Корень GitHub main</a> — список опубликованных файлов.</li>
+    <li><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/check_rulet_tv_setup.py">Проверяющий скрипт</a> — актуальные требования к файлам и старые имена popup.</li>
+    <li><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/yandex-cloud-keys-for-rulet-tv.html">HTML-инструкция Yandex Cloud</a> — архивная ссылка и встроенная копия скрипта.</li>
+    <li><a href="https://github.com/dictovod/rulet-tv-voice-assistant/blob/main/.gitignore">.gitignore</a> и <a href="https://github.com/dictovod/rulet-tv-voice-assistant/tree/main/server">содержимое server/</a> — правило исключения и факт, что `.env` уже tracked.</li>
+    <li><a href="https://cloud.mail.ru/public/EDqE/f9g2K9mfP">Архив Mail.ru</a> — публичный листинг с названием файла, но без версии.</li>
+  </ul>
+  <footer>Проверка была только чтением публичных страниц. Файлы GitHub не изменялись.</footer>
+</main></body></html>
