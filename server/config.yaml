@@ -4,9 +4,9 @@
 server:
   host: "127.0.0.1"          # слушаем только localhost
   port: 8765
-  auth_token: ""             # если задан — добавьте ?token=... к адресу сервера в popup расширения
-  allowed_extension_ids: []  # можно ограничить ID вашего расширения (chrome://extensions)
-  allow_any_origin: false    # true — разрешить клиентов без Origin (например, test_client.py без --origin)
+  auth_token: ""             # если задан — скопируйте его в настройки расширения
+  allowed_extension_ids: []  # добавьте ID расширения; пустой список закрывает WebSocket
+  allow_any_origin: false    # отключает проверку ID; небезопасно на сервере с ключом Yandex Cloud
   log_level: "info"
 
 yandex:
@@ -46,7 +46,9 @@ dialog:
   default_mode: "auto"       # "auto" — отвечать, "listen" — только слушать
   system_prompt_file: "system_prompt.txt"
   speak_greeting: true
-  greeting: "Здравствуйте! Я автоматический голосовой помощник. Чем могу помочь?"
+  greeting: "Привет, я Марина"
+  protect_greeting: true
+  response_pause_ms: 300
   fallback_phrase: "Извините, я не расслышал. Повторите, пожалуйста."
   max_history_turns: 10
   max_reply_chars: 400
