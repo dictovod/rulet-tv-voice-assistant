@@ -1,14 +1,21 @@
 /**
  * shared.js — общие константы и хелперы.
- * Подключается: в content-script (manifest), в service worker (importScripts) и в popup (<script>).
+ * Подключается в content-script, service worker и страницах расширения.
  */
 const RUTV = (() => {
   /** Настройки по умолчанию (хранятся в chrome.storage.local под ключом "rutv"). */
   const DEFAULTS = {
-    enabled: false,                          // главный переключатель
+    enabled: true,                           // работа включена, пока активно расширение
     mode: 'auto',                            // 'auto' — отвечает голосом; 'listen' — только слушает
     monitor: true,                           // слышать ту же озвучку через динамики ПК
     serverUrl: 'ws://127.0.0.1:8765/ws',     // адрес локального Python-сервера
+    authToken: '',
+    greetingEnabled: true,
+    greeting: 'Привет, я Марина',
+    protectGreeting: true,
+    videoDelayMs: 3000,
+    silenceMs: 800,
+    responsePauseMs: 300,
   };
 
   /** Uint8Array → base64. chrome.runtime-порты передают только JSON, поэтому бинарные данные кодируем. */

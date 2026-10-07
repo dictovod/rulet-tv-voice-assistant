@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Rulet.tv Voice Assistant",
-  "version": "0.2.0",
-  "description": "Прозрачный голосовой ИИ-помощник для Rulet.tv: STT → YandexGPT → TTS через локальный сервер.",
+  "version": "0.4.6",
+  "description": "Голосовой инструмент Марины для видеочатов Rulet.tv.",
   "minimum_chrome_version": "116",
-  "permissions": ["storage"],
+  "permissions": ["storage", "sidePanel", "clipboardWrite"],
   "background": {
     "service_worker": "background.js"
   },
@@ -27,13 +27,23 @@
   ],
   "action": {
     "default_title": "Rulet.tv Voice Assistant",
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     }
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "side_panel": {
+    "default_path": "panel.html"
+  },
+  "web_accessible_resources": [{
+    "resources": ["capture-processor.js"],
+    "matches": ["*://rulet.tv/*", "*://*.rulet.tv/*"]
+  }],
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",

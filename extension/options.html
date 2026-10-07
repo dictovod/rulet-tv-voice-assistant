@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Настройки голосового расширения</title>
+  <style>
+    :root { color-scheme: light; font: 15px/1.5 system-ui, sans-serif; color: #20252b; background: #f5f6f7; }
+    body { max-width: 700px; margin: 32px auto; padding: 0 20px; }
+    h1 { margin-bottom: 6px; font-size: 25px; }
+    p { margin-top: 0; color: #5d6670; }
+    section { margin: 18px 0; padding: 20px; border: 1px solid #d9dee3; border-radius: 12px; background: white; }
+    h2 { margin: 0 0 14px; font-size: 18px; }
+    label { display: block; margin: 12px 0 5px; font-weight: 600; }
+    .check { display: flex; gap: 10px; align-items: center; font-weight: 500; }
+    textarea { width: 100%; min-height: 105px; resize: vertical; box-sizing: border-box; padding: 10px; font: inherit; }
+    input[type=number], input[type=text], input[type=password], select { max-width: 100%; padding: 7px; font: inherit; }
+    input[type=text], input[type=password] { width: min(100%, 460px); }
+    small { display: block; color: #68737d; }
+    #saved { min-height: 24px; color: #187044; }
+    button { margin-top: 12px; padding: 8px 12px; border: 1px solid #bbc3cb; border-radius: 7px; background: #fff; font: inherit; cursor: pointer; }
+    @media (max-width: 600px) { body { margin: 18px auto; padding: 0 12px; } section { padding: 15px; } }
+  </style>
+</head>
+<body>
+  <h1>Настройки разговора</h1>
+  <p>Изменения сохраняются в расширении. Смена адреса сервера переподключает активную сессию.</p>
+  <section>
+    <h2>Работа автоответчика</h2>
+    <label class="check"><input id="enabled" type="checkbox"> Автоответчик включён</label>
+    <label for="mode">Режим</label>
+    <select id="mode"><option value="auto">Отвечать голосом</option><option value="listen">Только слушать</option></select>
+    <label class="check"><input id="monitor" type="checkbox"> Проигрывать ответ через динамики ПК</label>
+  </section>
+  <section>
+    <h2>Подключение к серверу</h2>
+    <label for="serverUrl">Адрес WebSocket-сервера</label>
+    <input id="serverUrl" type="text" spellcheck="false" autocomplete="url">
+    <small>Например: ws://127.0.0.1:8765/ws</small>
+    <label for="authToken">Токен сервера (если настроен)</label>
+    <input id="authToken" type="password" autocomplete="new-password">
+    <small>Токен хранится в настройках расширения и не включается в отладочный отчёт.</small>
+  </section>
+  <section>
+    <h2>Приветствие</h2>
+    <label class="check"><input id="greetingEnabled" type="checkbox"> Произносить приветствие в начале звонка</label>
+    <label for="greeting">Текст приветствия</label>
+    <textarea id="greeting" maxlength="500"></textarea>
+    <small>До 500 символов. Новое приветствие применяется при следующем звонке.</small>
+    <label class="check"><input id="protectGreeting" type="checkbox"> Не прерывать приветствие, если собеседник заговорил</label>
+    <small>Собеседник будет распознан, а ответ прозвучит после окончания приветствия. Другие ответы можно перебивать.</small>
+  </section>
+  <section>
+    <h2>Паузы</h2>
+    <label for="videoDelayMs">Подождать после появления видео, мс</label>
+    <input id="videoDelayMs" type="number" min="3000" max="5000" step="100">
+    <small>Время перед подключением ответа после появления изображения; минимум 3000 мс, чтобы дождаться отсчёта сайта.</small>
+    <label for="silenceMs">Тишина для завершения фразы, мс</label>
+    <input id="silenceMs" type="number" min="300" max="3000" step="100">
+    <small>Меньше — ответ начнётся быстрее, но длинные паузы собеседника могут разбить фразу. Допустимо 300–3000 мс.</small>
+
+    <label for="responsePauseMs">Дополнительная пауза перед ответом, мс</label>
+    <input id="responsePauseMs" type="number" min="0" max="3000" step="100">
+    <small>Добавляет время после подготовки текста ответа и перед его озвучиванием. Начальное значение 300 мс; допустимо 0–3000 мс.</small>
+  </section>
+  <button id="reset" type="button">Вернуть значения по умолчанию</button>
+  <p id="saved" role="status" aria-live="polite"></p>
+  <script src="shared.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

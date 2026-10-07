@@ -6,13 +6,15 @@ from __future__ import annotations
 
 import json
 import logging
+import platform
 from contextlib import asynccontextmanager
 
 import httpx
 import uvicorn
 from fastapi import FastAPI, WebSocket
 
-from config import load_settings
+from config import APP_VERSION, load_settings
+from origin import is_extension_allowed
 from session import CallSession, Services
 from yandex_gpt import YandexGPT
 from yandex_stt import YandexSTT
@@ -30,6 +32,8 @@ log = logging.getLogger("server")
 async def lifespan(app: FastAPI):
     if not settings.yandex.api_key or not settings.yandex.folder_id:
         log.warning("Не заданы YC_API_KEY / YC_FOLDER_ID — запросы к Яндексу работать не будут (см. .env)")
+    if not settings.server.allowed_extension_ids and not settings.server.allow_any_origin:
+        log.warning("WebSocket закрыт для всех расширений: добавьте ID расширения в server/config.yaml")
     async with httpx.AsyncClient() as http:
         app.state.services = Services(
             stt=YandexSTT(http, settings),
@@ -50,14 +54,7 @@ async def health():
 def _origin_allowed(ws: WebSocket) -> bool:
     """Пускаем только расширение Chrome: иначе любой сайт смог бы тратить ваши деньги в Яндекс Облаке."""
     cfg = settings.server
-    if cfg.allow_any_origin:
-        return True
-    origin = ws.headers.get("origin", "")
-    if not origin.startswith("chrome-extension://"):
-        return False
-    if cfg.allowed_extension_ids:
-        return origin.removeprefix("chrome-extension://").rstrip("/") in cfg.allowed_extension_ids
-    return True
+    return is_extension_allowed(ws.headers.get("origin", ""), cfg.allowed_extension_ids, cfg.allow_any_origin)
 
 
 @app.websocket("/ws")
@@ -69,6 +66,7 @@ async def ws_endpoint(ws: WebSocket):
         return
 
     await ws.accept()
+    await ws.send_json({"type": "server_info", "version": APP_VERSION, "python": platform.python_version()})
     session = CallSession(ws, settings, app.state.services)
     log.info("Клиент подключён")
     try:

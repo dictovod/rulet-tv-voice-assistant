@@ -15,7 +15,13 @@
   const toPage = (msg, transfer) => window.postMessage({ [CH]: 1, dir: 'down', ...msg }, '*', transfer || []);
 
   function pushConfig() {
-    toPage({ type: 'config', config: { enabled: config.enabled, mode: config.mode, monitor: config.monitor } });
+    toPage({ type: 'config', config: {
+      enabled: config.enabled,
+      mode: config.mode,
+      monitor: config.monitor,
+      videoDelayMs: config.videoDelayMs,
+      workletUrl: chrome.runtime.getURL('capture-processor.js'),
+    } });
   }
 
   async function loadConfig() {
@@ -67,6 +73,7 @@
       case 'tts_start': toPage({ type: 'tts_start', sampleRate: m.sample_rate }); break;
       case 'tts_end': toPage({ type: 'tts_end' }); break;
       case 'interrupt': toPage({ type: 'interrupt' }); break;
+      case 'dialog_ended': toPage({ type: 'dialog_ended' }); break;
       default: break;
     }
   }

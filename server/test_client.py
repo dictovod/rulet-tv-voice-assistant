@@ -19,6 +19,7 @@ async def main() -> None:
     ap.add_argument("wav")
     ap.add_argument("--url", default="ws://127.0.0.1:8765/ws")
     ap.add_argument("--mode", default="auto", choices=["auto", "listen"])
+    ap.add_argument("--origin-id", required=True, help="ID, также внесённый в server.allowed_extension_ids")
     ap.add_argument("--out", default="reply.wav")
     ap.add_argument("--wait", type=float, default=25, help="сколько секунд ждать ответ")
     args = ap.parse_args()
@@ -30,8 +31,8 @@ async def main() -> None:
     pcm += b"\x00" * 16000 * 2 * 2            # 2 секунды тишины — чтобы VAD закончил реплику
 
     audio, rate = bytearray(), 48000
-    # Origin нужен: сервер пускает только chrome-extension://
-    async with websockets.connect(args.url, origin="chrome-extension://local-test", max_size=None) as ws:
+    origin = f"chrome-extension://{args.origin_id}"
+    async with websockets.connect(args.url, origin=origin, max_size=None) as ws:
         await ws.send(json.dumps({"type": "start", "mode": args.mode, "resumed": True}))  # resumed — без приветствия
         for i in range(0, len(pcm), 3200):      # кадры по 100 мс
             await ws.send(pcm[i : i + 3200])

@@ -21,6 +21,7 @@ class VadEvent:
 class UtteranceVAD:
     def __init__(self, cfg: VadCfg, sample_rate: int = 16000):
         f = cfg.frame_ms
+        self.frame_ms = f
         self.frame_bytes = int(sample_rate * f / 1000) * 2
         self.start_frames = max(1, cfg.start_ms // f)
         self.silence_frames = max(1, cfg.silence_ms // f)
@@ -36,6 +37,9 @@ class UtteranceVAD:
         self._speech_run = 0
         self._silence_run = 0
         self._frames: list[bytes] = []
+
+    def set_silence_ms(self, silence_ms: int) -> None:
+        self.silence_frames = max(1, silence_ms // self.frame_ms)
 
     def feed(self, pcm: bytes) -> list[VadEvent]:
         """Принимает кусок PCM произвольной длины, возвращает наступившие события."""

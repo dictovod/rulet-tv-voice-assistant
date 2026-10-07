@@ -1,10 +1,9 @@
 /**
- * Universal Diagnostic Logger for Studio Assistant Plugin
- * Handles structured logging, memory caching, chrome.storage persistence, and log export.
+ * In-memory diagnostic logger. Conversation text is never persisted by this logger.
  */
 
 const LOG_STORAGE_KEY = 'studio_plugin_debug_logs';
-const MAX_LOGS = 500;
+const MAX_LOGS = 100;
 
 class PluginLogger {
   constructor(context = 'general') {
@@ -17,10 +16,7 @@ class PluginLogger {
   async init() {
     try {
       if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        const data = await chrome.storage.local.get([LOG_STORAGE_KEY]);
-        if (data && Array.isArray(data[LOG_STORAGE_KEY])) {
-          this.logs = data[LOG_STORAGE_KEY];
-        }
+        await chrome.storage.local.remove([LOG_STORAGE_KEY]);
       }
     } catch (err) {
       console.warn('[Logger] Unable to load cached logs from storage:', err);
@@ -58,7 +54,7 @@ class PluginLogger {
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'service_worker',
     };
 
-    const prefix = `[StudioPlugin:${this.context}][${entry.level}]`;
+    const prefix = `[RuletTV:${this.context}][${entry.level}]`;
     if (level === 'error') {
       console.error(prefix, message, metadata || '');
     } else if (level === 'warn') {
@@ -72,20 +68,9 @@ class PluginLogger {
       this.logs = this.logs.slice(0, MAX_LOGS);
     }
 
-    this._saveToStorage();
     this.subscribers.forEach((fn) => fn(entry));
 
     return entry;
-  }
-
-  async _saveToStorage() {
-    try {
-      if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-        await chrome.storage.local.set({ [LOG_STORAGE_KEY]: this.logs });
-      }
-    } catch (e) {
-      // Ignore quota errors
-    }
   }
 
   info(msg, meta = null) { return this._record('info', msg, meta); }
@@ -112,7 +97,7 @@ class PluginLogger {
   exportAsJSON() {
     return JSON.stringify({
       exportedAt: new Date().toISOString(),
-      pluginVersion: '1.0.0',
+      pluginVersion: typeof chrome !== 'undefined' && chrome.runtime ? chrome.runtime.getManifest().version : 'unknown',
       logs: this.logs,
     }, null, 2);
   }

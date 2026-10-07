@@ -9,6 +9,7 @@ import yaml
 from dotenv import load_dotenv
 from pydantic import BaseModel
 
+APP_VERSION = "0.4.3"
 BASE_DIR = Path(__file__).resolve().parent
 _ENV_RE = re.compile(r"\$\{(\w+)(?::-([^}]*))?\}")
 
@@ -85,7 +86,9 @@ class DialogCfg(BaseModel):
     default_mode: str = "auto"
     system_prompt_file: str = "system_prompt.txt"
     speak_greeting: bool = True
-    greeting: str = ""
+    greeting: str = "Привет, я Марина"
+    protect_greeting: bool = True
+    response_pause_ms: int = 300
     fallback_phrase: str = ""
     max_history_turns: int = 10
     max_reply_chars: int = 400

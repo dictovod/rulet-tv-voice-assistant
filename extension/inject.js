@@ -26,9 +26,10 @@
   const TAG = '[RuletTV]';
   const CAPTURE_RATE = 16000;          // частота, которую ждёт сервер
   const CHUNK_SAMPLES = 1600;          // 100 мс при 16 кГц
-  const SESSION_GRACE_MS = 5000;       // сколько ждём новый PeerConnection, прежде чем считать звонок оконченным
+  const SESSION_GRACE_MS = 5000;       // сколько ждём удалённое аудио перед завершением звонка
+  const VIDEO_TRANSITION_GRACE_MS = 1200;
 
-  const cfg = { enabled: false, mode: 'auto', monitor: true };
+  const cfg = { enabled: false, mode: 'auto', monitor: true, videoDelayMs: 3000, workletUrl: '' };
   const log = (...a) => console.log(TAG, ...a);
   const warn = (...a) => console.warn(TAG, ...a);
 
@@ -51,6 +52,7 @@
       case 'tts_start': engine.ttsRate = d.sampleRate || 48000; break;
       case 'tts_audio': if (cfg.enabled) engine.playPcm(d.pcm); break;
       case 'interrupt': engine.stopPlayback(); break;
+      case 'dialog_ended': endSession('диалог завершён по запросу собеседника'); break;
       default: break;
     }
   }
@@ -94,10 +96,31 @@
       this.ttsRate = 48000;
       this._chunk = new Int16Array(CHUNK_SAMPLES);
       this._filled = 0;
+      this.captureSetup = null;
+      this.userActivated = false;
+      this.pendingRemote = new Set();
+      this.pendingPlayback = [];
+
+      const activate = (event) => {
+        if (!event.isTrusted) return;
+        this.userActivated = true;
+        if (!cfg.enabled && !this.ctx) return;
+        this.ensure(true);
+        if (this.ctx && this.ctx.state !== 'running') this.ctx.resume().catch(() => {});
+        for (const track of this.pendingRemote) {
+          if (track.readyState === 'live') this.attachRemote(track);
+        }
+        this.pendingRemote.clear();
+        for (const pcm of this.pendingPlayback.splice(0)) this._playPcm(pcm);
+        pcs.forEach(collectRemote);
+        syncAll();
+      };
+      for (const t of ['pointerdown', 'keydown', 'click']) window.addEventListener(t, activate, true);
     }
 
     ensure() {
-      if (this.ctx) return;
+      if (this.ctx) return true;
+      if (!this.userActivated) return false;
       const Ctx = window.AudioContext || window.webkitAudioContext;
       this.ctx = new Ctx({ sampleRate: 48000, latencyHint: 'interactive' });
       this.destination = this.ctx.createMediaStreamDestination();
@@ -106,14 +129,37 @@
 
       // Шина захвата: все удалённые треки суммируются сюда.
       this.bus = this.ctx.createGain();
-      // ScriptProcessorNode (устарел, но не зависит от CSP страницы, в отличие от AudioWorklet).
-      this.processor = this.ctx.createScriptProcessor(4096, 1, 1);
       const sink = this.ctx.createGain();
-      sink.gain.value = 0;           // процессор должен быть подключён к выходу, но звука быть не должно
+      sink.gain.value = 0;
+      sink.connect(this.ctx.destination);
+      this.captureSetup = this._setupCapture(sink);
+      return true;
+    }
+
+    async _setupCapture(sink) {
+      if (this.ctx.audioWorklet && window.AudioWorkletNode && cfg.workletUrl) {
+        try {
+          await this.ctx.audioWorklet.addModule(cfg.workletUrl);
+          this.processor = new AudioWorkletNode(this.ctx, 'rutv-capture', {
+            numberOfInputs: 1,
+            numberOfOutputs: 1,
+            outputChannelCount: [1],
+            channelCount: 1,
+            processorOptions: { chunkSize: Math.round(this.ctx.sampleRate / 10) },
+          });
+          this.processor.port.onmessage = (event) => this._onAudioSamples(new Float32Array(event.data));
+          this.bus.connect(this.processor);
+          this.processor.connect(sink);
+          return;
+        } catch (e) {
+          warn('AudioWorklet не загрузился, включаю резервный захват', e);
+        }
+      }
+
+      this.processor = this.ctx.createScriptProcessor(4096, 1, 1);
+      this.processor.onaudioprocess = (e) => this._onAudioSamples(e.inputBuffer.getChannelData(0));
       this.bus.connect(this.processor);
       this.processor.connect(sink);
-      sink.connect(this.ctx.destination);
-      this.processor.onaudioprocess = (e) => this._onAudioProcess(e);
 
       // Политика автоплея: возобновляем контекст по любому действию пользователя.
       const resume = () => { if (this.ctx.state !== 'running') this.ctx.resume().catch(() => {}); };
@@ -123,8 +169,11 @@
 
     /** Подключить удалённый трек собеседника к захвату. */
     attachRemote(track) {
-      if (this.remote.has(track)) return;
-      this.ensure();
+      if (this.remote.has(track) || this.pendingRemote.has(track)) return;
+      if (!this.ensure()) {
+        this.pendingRemote.add(track);
+        return;
+      }
       const stream = new MediaStream([track]);
       // Обход бага Chromium: MediaStreamSource от удалённого WebRTC-потока отдаёт тишину,
       // пока поток не привязан к media-элементу. Элемент заглушён, чтобы не дублировать звук сайта.
@@ -147,9 +196,9 @@
       this.remote.delete(track);
     }
 
-    _onAudioProcess(e) {
+    _onAudioSamples(input) {
       if (!this.capturing) return;
-      const samples = this._down.process(e.inputBuffer.getChannelData(0));
+      const samples = this._down.process(input);
       for (const s of samples) {
         this._chunk[this._filled++] = (Math.max(-1, Math.min(1, s)) * 32767) | 0;
         if (this._filled === CHUNK_SAMPLES) {
@@ -162,7 +211,14 @@
 
     /** Поставить PCM16 mono (частота this.ttsRate) в очередь воспроизведения без щелчков между кусками. */
     playPcm(buffer) {
-      this.ensure();
+      if (!this.ensure()) {
+        this.pendingPlayback.push(buffer.slice(0));
+        return;
+      }
+      this._playPcm(buffer);
+    }
+
+    _playPcm(buffer) {
       const i16 = new Int16Array(buffer, 0, buffer.byteLength >> 1);
       const f32 = new Float32Array(i16.length);
       for (let i = 0; i < i16.length; i++) f32[i] = i16[i] / 32768;
@@ -181,6 +237,7 @@
 
     /** Барж-ин: оборвать всё, что запланировано и играет. */
     stopPlayback() {
+      this.pendingPlayback = [];
       for (const s of this.playing) { try { s.stop(); } catch (_) {} }
       this.playing.clear();
       this.nextStart = 0;
@@ -188,7 +245,7 @@
 
     /** Отладка: короткий тон в виртуальный микрофон (проверка replaceTrack без сервера). */
     beep(seconds = 1) {
-      this.ensure();
+      if (!this.ensure()) return;
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       gain.gain.value = 0.2;
@@ -211,7 +268,7 @@
   async function takeOver(sender) {
     const track = sender.track;
     if (!track || track.kind !== 'audio' || taken.has(sender)) return;
-    engine.ensure();
+    if (!engine.ensure()) return;
     if (track === engine.virtualTrack) return;
     taken.set(sender, { original: track });
     try {
@@ -251,7 +308,7 @@
     // Отправитель появился без трека (addTransceiver), а микрофон страница поставила позже —
     // ни одно событие это не сигнализирует, поэтому берём его под контроль прямо здесь.
     if (!rec && isRealAudio && cfg.enabled && cfg.mode === 'auto') {
-      engine.ensure();
+      if (!engine.ensure()) return nativeReplaceTrack.call(this, track);
       rec = { original: track };
       taken.set(this, rec);
       log('микрофон поставлен страницей через replaceTrack — подменяю');
@@ -323,6 +380,8 @@
   let watchdog = null;
   let sessionStartTimer = null;
   let videoReadyAt = 0;
+  let videoIdleSince = 0;
+  let hasSeenVideoTrack = false;
   const observedVideoTracks = new WeakSet();
 
   function hasLiveRemote() {
@@ -353,17 +412,26 @@
       sessionStartTimer = null;
       if (cfg.enabled && hasLiveRemoteVideo() && hasLiveRemote()) startSession();
       else if (!hasLiveRemoteVideo()) videoReadyAt = 0;
-    }, Math.max(0, 2000 - (Date.now() - videoReadyAt)));
+    }, Math.max(3000, cfg.videoDelayMs ?? 3000) - (Date.now() - videoReadyAt));
   }
 
   function onRemoteVideoTrack(track) {
     if (observedVideoTracks.has(track)) return;
     observedVideoTracks.add(track);
-    const onVideoStateChange = () => requestSessionStart();
+    const isReplacement = hasSeenVideoTrack;
+    let replacementHandled = false;
+    hasSeenVideoTrack = true;
+    const onVideoStateChange = () => {
+      if (isReplacement && !replacementHandled && sessionActive && track.readyState === 'live' && !track.muted) {
+        replacementHandled = true;
+        endSession('получен новый видеотрек собеседника');
+      }
+      requestSessionStart();
+    };
     track.addEventListener('unmute', onVideoStateChange);
     track.addEventListener('mute', onVideoStateChange);
     track.addEventListener('ended', onVideoStateChange);
-    requestSessionStart();
+    onVideoStateChange();
   }
 
   function startSession() {
@@ -378,6 +446,7 @@
 
   function endSession(reason) {
     videoReadyAt = 0;
+    videoIdleSince = 0;
     clearTimeout(sessionStartTimer);
     sessionStartTimer = null;
     if (!sessionActive) return;
@@ -395,9 +464,19 @@
     for (const pc of [...pcs]) {
       if (pc.connectionState === 'closed' || pc.signalingState === 'closed') pcs.delete(pc);
     }
+    const now = Date.now();
+    if (!hasLiveRemoteVideo()) {
+      if (!videoIdleSince) videoIdleSince = now;
+      if (now - videoIdleSince > VIDEO_TRANSITION_GRACE_MS) {
+        endSession('потеряно видео собеседника');
+        return;
+      }
+    } else {
+      videoIdleSince = 0;
+    }
     if (hasLiveRemote()) { idleSince = 0; return; }
-    if (!idleSince) idleSince = Date.now();
-    if (Date.now() - idleSince > SESSION_GRACE_MS) endSession('нет живых удалённых треков');
+    if (!idleSince) idleSince = now;
+    if (now - idleSince > SESSION_GRACE_MS) endSession('нет живых удалённых аудиотреков');
   }
 
   function onRemoteTrack(track) {
@@ -427,7 +506,7 @@
   // Диагностика: в консоли rulet.tv → __RUTV_DEBUG__.state()
   window.__RUTV_DEBUG__ = {
     beep: (s) => engine.beep(s),
-    state: () => ({ cfg: { ...cfg }, pcs: pcs.size, sessionActive, ctx: engine.ctx && engine.ctx.state }),
+    state: () => ({ cfg: { ...cfg }, effectiveVideoDelayMs: Math.max(3000, cfg.videoDelayMs ?? 3000), pcs: pcs.size, sessionActive, ctx: engine.ctx && engine.ctx.state }),
   };
 
   toBridge({ type: 'hello' });
